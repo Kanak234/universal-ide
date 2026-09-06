@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IDE — Universal IDE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container inner" style="max-width:100%">
+    <a class="brand" href="index.html"><span class="logo">&lt;/&gt;</span>Universal IDE</a>
+    <nav class="nav-links">
+      <a href="index.html#pricing" class="hide-m">Pricing</a>
+      <span data-auth="out">
+        <button class="btn btn-ghost btn-sm" data-open-auth="login">Log in</button>
+        <button class="btn btn-primary btn-sm" data-open-auth="signup">Sign up free</button>
+      </span>
+      <span data-auth="in" style="display:none">
+        <span class="mono" style="color:var(--paper-dim);font-size:13px">Hi, <b id="navUserName" style="color:var(--paper)"></b></span>
+        <button class="btn btn-ghost btn-sm" data-logout style="margin-left:8px">Log out</button>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<div class="ide-shell">
+  <!-- language rail -->
+  <aside class="ide-side">
+    <div class="group-label">Languages</div>
+    <div id="langList"></div>
+  </aside>
+
+  <!-- workbench -->
+  <main class="ide-main">
+    <div class="ide-toolbar">
+      <span class="fname" id="fileName">main.py</span>
+      <button class="btn btn-run btn-sm" id="runBtn">▶ Run <span class="mono" style="font-size:11px;opacity:.7">Ctrl+↵</span></button>
+      <button class="btn btn-ghost btn-sm" id="saveBtn">Save</button>
+      <button class="btn btn-ghost btn-sm" id="downloadBtn">Download</button>
+      <button class="btn btn-ghost btn-sm" id="resetBtn">Reset template</button>
+    </div>
+
+    <div class="ide-panes">
+      <!-- editor -->
+      <section class="pane">
+        <div class="pane-head">Editor</div>
+        <div class="pane-body">
+          <textarea id="codeArea"></textarea>
+
+          <!-- shown when the language is Pro and not subscribed -->
+          <div class="lock-overlay" id="lockOverlay" style="display:none">
+            <div class="big">🔒</div>
+            <h3><span id="lockName">Java</span> is a Pro language</h3>
+            <p>Unlock it for <b id="lockPrice">₹99 / month</b> — pay by UPI QR, activate after quick verification.</p>
+            <button class="btn btn-primary" id="unlockBtn">Unlock with UPI</button>
+          </div>
+        </div>
+        <div id="stdinWrap">
+          <label for="stdin">Program input (stdin)</label>
+          <textarea id="stdin" rows="2" placeholder="Values your program will read — one per line"></textarea>
+        </div>
+      </section>
+
+      <!-- output / preview -->
+      <section class="pane">
+        <div class="pane-head"><span id="outLabel">Output</span></div>
+        <div class="pane-body">
+          <div id="output"></div>
+          <iframe id="previewFrame" title="Live preview" sandbox="allow-scripts"></iframe>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- ================= PAY MODAL ================= -->
+<div class="modal-backdrop" id="payModal">
+  <div class="modal">
+    <button class="x" onclick="UIDE.closeModal('payModal')" aria-label="Close">×</button>
+    <h3>Unlock <span id="payLangName">Java</span></h3>
+    <p class="sub"><b id="payPrice">₹99</b> · <span id="payDays">30</span> days of access</p>
+
+    <div class="qr-box" id="qrBox"></div>
+    <p class="pay-amount">Scan with any UPI app — amount is pre-filled</p>
+
+    <ol class="pay-steps">
+      <li>Scan the QR and complete the payment.</li>
+      <li>Copy the <b>12-digit UTR</b> from your payment receipt.</li>
+      <li>Paste it below and submit — access activates after verification.</li>
+    </ol>
+
+    <div class="ledger-note">
+      <span>⛓</span>
+      <span>Your submission is written to a hash-chained, tamper-evident ledger. Payee details stay inside the QR — never displayed as text on this site.</span>
+    </div>
+
+    <p class="form-ok" id="payPendingNote" style="display:none">You already have a submission pending verification for this language.</p>
+
+    <form id="utrForm">
+      <div class="field">
+        <label for="utr">UTR / transaction ID (12 digits)</label>
+        <input id="utr" inputmode="numeric" pattern="\d{12}" maxlength="12" placeholder="e.g. 415023678912" required>
+      </div>
+      <div class="form-err" id="utrErr"></div>
+      <div class="form-ok" id="utrOk"></div>
+      <button class="btn btn-primary" style="width:100%">Submit for verification</button>
+    </form>
+  </div>
+</div>
+
+<!-- ================= AUTH MODAL ================= -->
+<div class="modal-backdrop" id="authModal">
+  <div class="modal">
+    <button class="x" onclick="UIDE.closeModal('authModal')" aria-label="Close">×</button>
+    <h3>Welcome</h3>
+    <p class="sub">Log in to save code and unlock Pro languages.</p>
+    <div style="display:flex;gap:8px;margin-bottom:18px">
+      <button id="tabLogin" class="btn btn-primary btn-sm" onclick="switchAuthTab('login')">Log in</button>
+      <button id="tabSignup" class="btn btn-ghost btn-sm" onclick="switchAuthTab('signup')">Sign up</button>
+    </div>
+    <form id="loginForm">
+      <div class="field"><label>Email</label><input name="email" type="email" required autocomplete="email"></div>
+      <div class="field"><label>Password</label><input name="password" type="password" required autocomplete="current-password"></div>
+      <div class="form-err" id="loginErr"></div>
+      <button class="btn btn-primary" style="width:100%">Log in</button>
+    </form>
+    <form id="signupForm" style="display:none">
+      <div class="field"><label>Full name</label><input name="name" type="text" required autocomplete="name"></div>
+      <div class="field"><label>Email</label><input name="email" type="email" required autocomplete="email"></div>
+      <div class="field"><label>Password (min 6 characters)</label><input name="password" type="password" required minlength="6" autocomplete="new-password"></div>
+      <div class="form-err" id="signupErr"></div>
+      <button class="btn btn-primary" style="width:100%">Create free account</button>
+    </form>
+  </div>
+</div>
+
+<!-- libs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/sql/sql.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script src="js/core.js"></script>
+<script src="js/ide.js"></script>
+</body>
+</html>

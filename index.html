@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Universal IDE — write, run and learn code in your browser</title>
+<meta name="description" content="A browser IDE for students. C, C++, Java, Python, JavaScript, HTML, CSS, SQL and MongoDB — no installation, runs on any device.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="grid-bg">
+
+<header class="site-header">
+  <div class="container inner">
+    <a class="brand" href="index.html"><span class="logo">&lt;/&gt;</span>Universal IDE</a>
+    <nav class="nav-links">
+      <a href="#languages" class="hide-m">Languages</a>
+      <a href="#pricing" class="hide-m">Pricing</a>
+      <a href="#how-pay" class="hide-m">How it works</a>
+      <span data-auth="out">
+        <button class="btn btn-ghost btn-sm" data-open-auth="login">Log in</button>
+        <button class="btn btn-primary btn-sm" data-open-auth="signup">Sign up free</button>
+      </span>
+      <span data-auth="in" style="display:none">
+        <span class="mono" style="color:var(--paper-dim);font-size:13px">Hi, <b id="navUserName" style="color:var(--paper)"></b></span>
+        <a class="btn btn-primary btn-sm" href="ide.html" style="margin:0 8px">Open IDE</a>
+        <button class="btn btn-ghost btn-sm" data-logout>Log out</button>
+      </span>
+    </nav>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="container inner">
+    <div>
+      <span class="eyebrow">// no installation · runs on any device</span>
+      <h1>Your whole computer lab,<br>in <span class="accent">one browser tab.</span></h1>
+      <p class="lede">Write and run C, C++, Java, Python, JavaScript, HTML, CSS, SQL and MongoDB — with real program input, live previews and one-click downloads for your lab records.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="ide.html">Start coding — it's free</a>
+        <a class="btn btn-ghost" href="#pricing">See Pro pricing</a>
+      </div>
+      <p class="hero-note">$ built for BCA · BSc IT · school students_</p>
+    </div>
+
+    <!-- signature: self-typing editor -->
+    <div class="editor-card" aria-hidden="true">
+      <div class="titlebar">
+        <span class="dot" style="background:#F26D6D"></span>
+        <span class="dot" style="background:#FFB53C"></span>
+        <span class="dot" style="background:#46D68C"></span>
+        <span style="margin-left:8px">main.c — Universal IDE</span>
+      </div>
+      <pre id="typeTarget"></pre>
+      <div class="out" id="typeOut"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LANGUAGES ================= -->
+<section class="section" id="languages">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">// languages</span>
+      <h2>Everything your syllabus asks for</h2>
+      <p>Free languages are open to everyone, forever. Pro languages unlock with a small monthly plan — priced for student pockets.</p>
+    </div>
+    <div class="lang-grid" id="langGrid"></div>
+  </div>
+</section>
+
+<!-- ================= PRICING ================= -->
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">// pricing</span>
+      <h2>Pay per language. Cancel by simply not renewing.</h2>
+      <p>No hidden charges, no auto-debit. Each plan runs for <b id="planDaysTxt">30</b> days from activation.</p>
+    </div>
+    <div class="lang-grid" id="priceGrid"></div>
+  </div>
+</section>
+
+<!-- ================= PAYMENT FLOW ================= -->
+<section class="section" id="how-pay">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">// how unlocking works</span>
+      <h2>Scan, pay, verified — done</h2>
+      <p>Payments happen through a UPI QR code. Your money goes straight from your UPI app; the site never asks for card details or wallet logins.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><h3>Pick a Pro language</h3><p>Open it in the IDE and press <b>Unlock</b>. A payment QR appears with the exact amount pre-filled.</p></div>
+      <div class="step"><h3>Scan with any UPI app</h3><p>GPay, PhonePe, Paytm, BHIM — scan and pay. The payee details live inside the QR, so no numbers float around as plain text.</p></div>
+      <div class="step"><h3>Submit your UTR</h3><p>Every UPI receipt has a 12-digit UTR / transaction ID. Paste it in the form under the QR.</p></div>
+      <div class="step"><h3>Access activates</h3><p>The payment is verified against bank records and your plan switches on. Every step is written to a tamper-evident hash-chained ledger.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">// questions</span>
+      <h2>Fair questions, straight answers</h2>
+    </div>
+    <div class="faq">
+      <details>
+        <summary>Do C, C++ and Java really compile, or is it fake?</summary>
+        <div class="body">Really compile. Code is sent to an open execution service (Piston) that runs real GCC and the JDK, then the output — including compiler errors — comes back to your screen. You need internet for these languages.</div>
+      </details>
+      <details>
+        <summary>Can my programs take input, like scanf and cin?</summary>
+        <div class="body">Yes. There is a Program Input box under the editor — whatever you type there is fed to your program as standard input, exactly like typing into a terminal.</div>
+      </details>
+      <details>
+        <summary>What is the hash-chained ledger? Does it hide my payment?</summary>
+        <div class="body">No — and be careful of anyone who claims otherwise. UPI payments always have a bank trail; that is what makes them safe. The ledger does something different: every payment event is chained with SHA-256 hashes, so if any record is edited later, verification fails. It proves records weren't tampered with. What stays private is simpler — the owner's number is never displayed on the site; it lives only inside the QR.</div>
+      </details>
+      <details>
+        <summary>Why do I have to submit a UTR number?</summary>
+        <div class="body">The UTR (a 12-digit ID on every UPI receipt) is how your payment is matched to your account and verified against the bank statement before your plan activates. It usually takes a few hours at most.</div>
+      </details>
+      <details>
+        <summary>Is my code saved?</summary>
+        <div class="body">Your code auto-saves in your browser per language, and you can download any file with one click — handy for lab record submissions.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container inner">
+    <span>© <span id="yr"></span> Universal IDE · Built by Coding with Kanak</span>
+    <span class="mono">write → run → learn</span>
+  </div>
+</footer>
+
+<!-- ================= AUTH MODAL ================= -->
+<div class="modal-backdrop" id="authModal">
+  <div class="modal">
+    <button class="x" onclick="UIDE.closeModal('authModal')" aria-label="Close">×</button>
+    <h3>Welcome</h3>
+    <p class="sub">One account works across every language.</p>
+    <div style="display:flex;gap:8px;margin-bottom:18px">
+      <button id="tabLogin" class="btn btn-primary btn-sm" onclick="switchAuthTab('login')">Log in</button>
+      <button id="tabSignup" class="btn btn-ghost btn-sm" onclick="switchAuthTab('signup')">Sign up</button>
+    </div>
+
+    <form id="loginForm">
+      <div class="field"><label>Email</label><input name="email" type="email" required autocomplete="email"></div>
+      <div class="field"><label>Password</label><input name="password" type="password" required autocomplete="current-password"></div>
+      <div class="form-err" id="loginErr"></div>
+      <button class="btn btn-primary" style="width:100%">Log in</button>
+    </form>
+
+    <form id="signupForm" style="display:none">
+      <div class="field"><label>Full name</label><input name="name" type="text" required autocomplete="name"></div>
+      <div class="field"><label>Email</label><input name="email" type="email" required autocomplete="email"></div>
+      <div class="field"><label>Password (min 6 characters)</label><input name="password" type="password" required minlength="6" autocomplete="new-password"></div>
+      <div class="form-err" id="signupErr"></div>
+      <button class="btn btn-primary" style="width:100%">Create free account</button>
+    </form>
+  </div>
+</div>
+
+<script src="js/core.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('yr').textContent = new Date().getFullYear();
+  const s = UIDE.getSettings();
+  document.getElementById('planDaysTxt').textContent = s.planDays || 30;
+
+  /* language + pricing grids from live settings */
+  const langGrid = document.getElementById('langGrid');
+  const priceGrid = document.getElementById('priceGrid');
+  for (const l of s.languages) {
+    langGrid.insertAdjacentHTML('beforeend', `
+      <div class="lang-card">
+        <div class="top"><span class="glyph">${UIDE.esc(l.glyph)}</span>
+          ${l.free ? '<span class="chip chip-free">Free</span>' : '<span class="chip chip-pro">Pro</span>'}</div>
+        <h3>${UIDE.esc(l.name)}</h3>
+        <p class="desc">${UIDE.esc(l.desc)}</p>
+      </div>`);
+    priceGrid.insertAdjacentHTML('beforeend', `
+      <div class="lang-card">
+        <div class="top"><h3>${UIDE.esc(l.name)}</h3>
+          ${l.free ? '<span class="chip chip-free">Free</span>' : '<span class="chip chip-pro">Pro</span>'}</div>
+        <p class="price">${l.free ? '<b>₹0</b> forever' : '<b>' + UIDE.inr(l.price) + '</b> / month'}</p>
+        <a class="btn ${l.free ? 'btn-ghost' : 'btn-primary'} btn-sm" href="ide.html" style="margin-top:auto">
+          ${l.free ? 'Open in IDE' : 'Unlock in IDE'}</a>
+      </div>`);
+  }
+
+  /* signature hero: self-typing C program */
+  const CODE = [
+    ['tok-k','#include'],[null,' '],['tok-s','<stdio.h>'],[null,'\n\n'],
+    ['tok-k','int'],[null,' '],['tok-f','main'],[null,'() {\n    '],
+    ['tok-f','printf'],[null,'('],['tok-s','"Hello, Universal IDE!\\n"'],[null,');\n    '],
+    ['tok-c','// every language, one tab'],[null,'\n    '],
+    ['tok-k','return'],[null,' 0;\n}']
+  ];
+  const target = document.getElementById('typeTarget');
+  const outEl = document.getElementById('typeOut');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function renderInstant(){
+    target.innerHTML = CODE.map(([c,t]) => c ? `<span class="${c}">${UIDE.esc(t)}</span>` : UIDE.esc(t)).join('');
+    outEl.innerHTML = '$ ./main<br>Hello, Universal IDE!';
+  }
+  if (reduced) { renderInstant(); }
+  else {
+    let seg = 0, pos = 0, html = '';
+    (function tick(){
+      if (seg >= CODE.length) {
+        target.innerHTML = html;
+        setTimeout(() => { outEl.innerHTML = '$ ./main'; }, 350);
+        setTimeout(() => { outEl.innerHTML = '$ ./main<br>Hello, Universal IDE!'; }, 900);
+        return;
+      }
+      const [cls, text] = CODE[seg];
+      pos++;
+      const done = text.slice(0, pos);
+      const cur = cls ? `<span class="${cls}">${UIDE.esc(done)}</span>` : UIDE.esc(done);
+      target.innerHTML = html + cur + '<span class="caret"></span>';
+      if (pos >= text.length) { html += cur; seg++; pos = 0; }
+      setTimeout(tick, 26);
+    })();
+  }
+});
+</script>
+</body>
+</html>

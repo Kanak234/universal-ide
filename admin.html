@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Universal IDE</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="grid-bg">
+
+<header class="site-header">
+  <div class="container inner" style="max-width:100%">
+    <a class="brand" href="index.html"><span class="logo">&lt;/&gt;</span>Universal IDE <span class="chip chip-pro" style="margin-left:6px">Admin</span></a>
+    <nav class="nav-links">
+      <a href="ide.html" class="hide-m">Open IDE</a>
+      <button class="btn btn-ghost btn-sm" id="adminLogout">Lock console</button>
+    </nav>
+  </div>
+</header>
+
+<!-- ---------- login gate ---------- -->
+<div id="adminLoginWrap">
+  <div class="admin-login">
+    <span class="eyebrow">// owner console</span>
+    <h2>Admin login</h2>
+    <p class="sub">Manage pricing, verify payments and grant access.</p>
+    <form id="adminLoginForm">
+      <div class="field"><label>Username</label><input name="username" required autocomplete="username"></div>
+      <div class="field"><label>Password</label><input name="password" type="password" required autocomplete="current-password"></div>
+      <div class="form-err" id="adminErr"></div>
+      <button class="btn btn-primary" style="width:100%">Enter console</button>
+    </form>
+  </div>
+</div>
+
+<!-- ---------- console ---------- -->
+<div class="admin-shell" id="adminShell" style="display:none">
+  <nav class="admin-nav">
+    <button data-tab="dash" class="active">▦ Dashboard</button>
+    <button data-tab="langs">⌨ Languages</button>
+    <button data-tab="pays">₹ Payments</button>
+    <button data-tab="users">👥 Users</button>
+    <button data-tab="ledger">⛓ Ledger</button>
+    <button data-tab="settings">⚙ Settings</button>
+  </nav>
+
+  <div class="admin-body">
+
+    <!-- DASHBOARD -->
+    <section class="admin-tab" id="tab-dash">
+      <h2>Dashboard</h2>
+      <p class="sub">A quick pulse of the whole platform.</p>
+      <div class="stat-grid">
+        <div class="stat"><div class="k">Students</div><div class="v" id="stUsers">0</div></div>
+        <div class="stat"><div class="k">Active subscriptions</div><div class="v green" id="stSubs">0</div></div>
+        <div class="stat"><div class="k">Pending payments</div><div class="v gold" id="stPending">0</div></div>
+        <div class="stat"><div class="k">Approved revenue</div><div class="v gold" id="stRevenue">₹0</div></div>
+      </div>
+      <h3 style="margin:6px 0 12px;font-size:16px">Recent payments</h3>
+      <table class="tbl">
+        <thead><tr><th>User</th><th>Language</th><th>Amount</th><th>Status</th><th>When</th></tr></thead>
+        <tbody id="dashRecent"></tbody>
+      </table>
+    </section>
+
+    <!-- LANGUAGES -->
+    <section class="admin-tab" id="tab-langs" style="display:none">
+      <h2>Languages</h2>
+      <p class="sub">Flip any language between Free and Paid, and set its monthly price. Changes apply instantly across the site.</p>
+      <table class="tbl">
+        <thead><tr><th>Language</th><th>Free?</th><th>Price (₹/month)</th><th>Currently</th></tr></thead>
+        <tbody id="langRows"></tbody>
+      </table>
+    </section>
+
+    <!-- PAYMENTS -->
+    <section class="admin-tab" id="tab-pays" style="display:none">
+      <h2>Payments</h2>
+      <p class="sub">Match each UTR against your UPI app / bank statement, then approve. Approving activates the plan immediately.</p>
+      <table class="tbl">
+        <thead><tr><th>User</th><th>Language</th><th>Amount</th><th>UTR</th><th>Submitted</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="payRows"></tbody>
+      </table>
+    </section>
+
+    <!-- USERS -->
+    <section class="admin-tab" id="tab-users" style="display:none">
+      <h2>Users</h2>
+      <p class="sub">Grant free access to any student for any duration — for toppers, friends, or promotions.</p>
+
+      <form id="grantForm" style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:22px">
+        <div class="field" style="margin:0;min-width:220px"><label>Student</label><select id="grantUser"></select></div>
+        <div class="field" style="margin:0;min-width:160px"><label>Language</label><select id="grantLang"></select></div>
+        <div class="field" style="margin:0;width:110px"><label>Days</label><input id="grantDays" type="number" min="1" value="7"></div>
+        <button class="btn btn-primary">Grant free access</button>
+      </form>
+
+      <table class="tbl">
+        <thead><tr><th>Student</th><th>Joined</th><th>Active plans</th><th>Actions</th></tr></thead>
+        <tbody id="userRows"></tbody>
+      </table>
+    </section>
+
+    <!-- LEDGER -->
+    <section class="admin-tab" id="tab-ledger" style="display:none">
+      <h2>Payment ledger</h2>
+      <p class="sub">Every payment event is a block chained by SHA-256 hashes — edit anything and verification breaks. <b><span id="chainCount">0</span></b> block(s) recorded.</p>
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" id="verifyChainBtn">Verify chain integrity</button>
+        <span id="verifyResult"></span>
+      </div>
+      <div id="chainBlocks"></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="admin-tab" id="tab-settings" style="display:none">
+      <h2>Settings</h2>
+      <p class="sub">The UPI ID below is embedded into payment QR codes only — it is never printed on any public page.</p>
+      <form id="settingsForm" style="max-width:440px">
+        <div class="field">
+          <label>UPI ID (VPA) — e.g. 7257864300@ybl / name@paytm</label>
+          <input name="upiVpa" required>
+        </div>
+        <div class="field"><label>Payee name (shows in the payer's UPI app)</label><input name="payeeName" required></div>
+        <div class="field"><label>Plan duration (days per payment)</label><input name="planDays" type="number" min="1" required></div>
+        <button class="btn btn-primary">Save settings</button>
+      </form>
+    </section>
+
+  </div>
+</div>
+
+<script src="js/core.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>
