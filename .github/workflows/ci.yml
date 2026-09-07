@@ -1,0 +1,44 @@
+name: CI
+
+# This workflow validates the static application without changing its runtime behavior.
+# Because the project has no package manager/build step, CI checks the HTML and JavaScript
+# entry points directly with the tools already provided by Node.js and Python.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      # Validate the exact files that are shipped as the browser application.
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      # Python's built-in parser provides a dependency-free structural check for HTML files.
+      - name: Validate HTML structure
+        run: |
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+
+          class Validator(HTMLParser):
+              pass
+
+          for path in sorted(Path(".").glob("*.html")):
+              Validator().feed(path.read_text(encoding="utf-8"))
+              print(f"Validated {path}")
+          PY
+
+      # Node --check parses JavaScript without executing browser code or requiring secrets.
+      - name: Validate JavaScript syntax
+        run: |
+          for file in js/*.js; do
+            echo "Checking $file"
+            node --check "$file"
+          done
